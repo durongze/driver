@@ -1,0 +1,1 @@
+cmd_/home/pi/code/driver/src/2synchronous/2-4sem/demo/demo.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/2synchronous/2-4sem/demo/demo.ko /home/pi/code/driver/src/2synchronous/2-4sem/demo/demo.o /home/pi/code/driver/src/2synchronous/2-4sem/demo/demo.mod.o ;  true

@@ -1,0 +1,1 @@
+cmd_/home/pi/code/driver/src/1drivermodel/1-9proc/proc/demo.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/1drivermodel/1-9proc/proc/demo.ko /home/pi/code/driver/src/1drivermodel/1-9proc/proc/demo.o /home/pi/code/driver/src/1drivermodel/1-9proc/proc/demo.mod.o ;  true

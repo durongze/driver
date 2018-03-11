@@ -1,0 +1,1 @@
+cmd_/home/pi/code/driver/src/4schedule/4-2tasklet/tasklet.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/4schedule/4-2tasklet/tasklet.ko /home/pi/code/driver/src/4schedule/4-2tasklet/tasklet.o /home/pi/code/driver/src/4schedule/4-2tasklet/tasklet.mod.o ;  true

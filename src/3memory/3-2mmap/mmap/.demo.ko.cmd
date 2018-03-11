@@ -1,0 +1,1 @@
+cmd_/home/pi/code/driver/src/3memory/3-2mmap/mmap/demo.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/3memory/3-2mmap/mmap/demo.ko /home/pi/code/driver/src/3memory/3-2mmap/mmap/demo.o /home/pi/code/driver/src/3memory/3-2mmap/mmap/demo.mod.o ;  true
