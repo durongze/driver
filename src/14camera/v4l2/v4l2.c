@@ -66,7 +66,7 @@ static int xioctl(int fd,int request,void *arg)
 static void process_image(const void *p)   
 {   
 	FILE* fp;   
-	fp = fopen("test","w+");   
+	fp = fopen("test.img","w+");   
 	fputs(p, fp);   
 	fclose(fp);   
 	//  fflush(stdout);    

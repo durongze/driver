@@ -1,3 +1,6 @@
+
+#include<alsa/asoundlib.h>
+
 int main(void)
 {
 	int unmute, chn;
@@ -8,9 +11,7 @@ int main(void)
 	snd_mixer_attach(mixer, "default");
 	snd_mixer_selem_register(mixer, NULL, NULL);//×¢²á»ìÒôÆ÷
 	snd_mixer_load(mixer);
-	for(elem=snd_mixer_first_elem(mixer); 
-	elem; elem=snd_mixer_elem_next(elem))
-    {
+	for(elem=snd_mixer_first_elem(mixer); elem; elem=snd_mixer_elem_next(elem)) {
 		/* Éè¶¨ÒôÁ¿µÄ·¶Î§ 0 ~ 100 */
 		snd_mixer_selem_set_playback_volume_range
 			(elem, 0, 100);
@@ -27,4 +28,5 @@ int main(void)
 		snd_mixer_selem_set_playback_volume
 			(elem, SND_MIXER_SCHN_FRONT_RIGHT, 99);
     }
+    return 0;
 }

@@ -10,6 +10,12 @@ int main(int argc,char *argv[])
     int rate=22050;
     int channels=2;
     snd_pcm_hw_params_t *hw_params;
+
+    if (argc != 2) {
+        fprintf(stderr,"usage:\n %s device \n", argv[0]);
+        exit(1);
+    }
+
     if((err=snd_pcm_open(&playback_handle,argv[1],SND_PCM_STREAM_PLAYBACK,0))<0){
         fprintf(stderr,"cant open audio device %s (%s)\n",argv[1],snd_strerror(err));
         exit(1);

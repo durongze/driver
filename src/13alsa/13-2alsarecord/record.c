@@ -10,6 +10,11 @@ main (int argc, char *argv[])
 	int rate=22050;
 	snd_pcm_t *capture_handle;
 	snd_pcm_hw_params_t *hw_params;
+    
+    if (argc != 2) {
+        fprintf(stderr,"usage:\n %s device \n", argv[0]);
+        exit(1);
+    }
 
 	if ((err = snd_pcm_open (&capture_handle, argv[1], SND_PCM_STREAM_CAPTURE, 0)) < 0) {
 		fprintf (stderr, "cannot open audio device %s (%s)\n", 

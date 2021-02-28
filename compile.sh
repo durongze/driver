@@ -2,6 +2,8 @@
 
 # 取回自己为树莓派定制的Linux内核源码树
 
+export PLATFORM=PC
+
 function DownloadKernel()
 {
     git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
@@ -37,7 +39,7 @@ function CompileModule()
     ModDir=$1
     echo "$ModDir"
     pushd $ModDir
-    make clean
+    make clean 
     popd
 }
 

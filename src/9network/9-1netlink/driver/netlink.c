@@ -31,15 +31,14 @@ void sample_input (struct sk_buff *__skb)
 		nlh = nlmsg_hdr(skb);
 		dlen= nlh->nlmsg_len;
 		pid = nlh->nlmsg_pid;/*·¢ËÍ½ø³ÌID */
-		if(dlen>100)dlen=100;
+		if(dlen>100) dlen=100;
 		memset(data,0,100);
 		memcpy(data,NLMSG_DATA(nlh),dlen); 
 		printk("[%s:%d] net_link: recv '%s' from process %d.\n",__FUNCTION__,__LINE__,data,pid);
 		kfree_skb(skb);
 		
 		skb = alloc_skb(len, GFP_ATOMIC);
-		if (!skb)
-		{
+		if (!skb) {
 			printk("net_link: alloc_skb failed.\n");
 			return;
 		}
@@ -58,9 +57,11 @@ void sample_input (struct sk_buff *__skb)
 	}
 	return;
 }
+
 struct netlink_kernel_cfg cfg = {
         .input = sample_input,
 };
+
 static int init_netlink(void) 
 {
 	//nl_sk = netlink_kernel_create(&init_net, NETLINK_SAMPLE, 0, sample_input, NULL, THIS_MODULE);
