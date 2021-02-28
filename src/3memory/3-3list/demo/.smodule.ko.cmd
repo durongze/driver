@@ -1,1 +1,0 @@
-cmd_/home/pi/code/driver/src/3memory/3-3list/demo/smodule.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/3memory/3-3list/demo/smodule.ko /home/pi/code/driver/src/3memory/3-3list/demo/smodule.o /home/pi/code/driver/src/3memory/3-3list/demo/smodule.mod.o ;  true

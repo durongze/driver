@@ -1,1 +1,0 @@
-cmd_/home/pi/code/driver/src/1drivermodel/1-11net/demo.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/1drivermodel/1-11net/demo.ko /home/pi/code/driver/src/1drivermodel/1-11net/demo.o /home/pi/code/driver/src/1drivermodel/1-11net/demo.mod.o ;  true

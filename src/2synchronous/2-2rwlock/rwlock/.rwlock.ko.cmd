@@ -1,1 +1,0 @@
-cmd_/home/pi/code/driver/src/2synchronous/2-2rwlock/rwlock/rwlock.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/2synchronous/2-2rwlock/rwlock/rwlock.ko /home/pi/code/driver/src/2synchronous/2-2rwlock/rwlock/rwlock.o /home/pi/code/driver/src/2synchronous/2-2rwlock/rwlock/rwlock.mod.o ;  true

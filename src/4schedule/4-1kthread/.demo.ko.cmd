@@ -1,1 +1,0 @@
-cmd_/home/pi/code/driver/src/4schedule/4-1kthread/demo.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/4schedule/4-1kthread/demo.ko /home/pi/code/driver/src/4schedule/4-1kthread/demo.o /home/pi/code/driver/src/4schedule/4-1kthread/demo.mod.o ;  true

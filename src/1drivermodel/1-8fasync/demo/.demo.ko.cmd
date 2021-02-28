@@ -1,1 +1,0 @@
-cmd_/home/pi/code/driver/src/1drivermodel/1-8fasync/demo/demo.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/1drivermodel/1-8fasync/demo/demo.ko /home/pi/code/driver/src/1drivermodel/1-8fasync/demo/demo.o /home/pi/code/driver/src/1drivermodel/1-8fasync/demo/demo.mod.o ;  true

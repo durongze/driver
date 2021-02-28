@@ -1,1 +1,0 @@
-cmd_/home/pi/code/driver/src/3memory/3-1ioremap/ioremap.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/code/driver/src/3memory/3-1ioremap/ioremap.ko /home/pi/code/driver/src/3memory/3-1ioremap/ioremap.o /home/pi/code/driver/src/3memory/3-1ioremap/ioremap.mod.o ;  true
