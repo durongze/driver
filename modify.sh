@@ -1,13 +1,30 @@
 #!/bin/bash
 
-modprobe configs
-zcat /proc/config.gz
+function ExportConfig()
+{
+    modprobe configs
+    zcat /proc/config.gz
+}
 
-find ./ -iname "Makefile" | xargs -I {}  sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i {} 
+function ModifyMakeFile()
+{
+    # find ./ -iname "Makefile" | xargs -I {}  sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i {} 
+    mkFile=$(find ./ -iname "Makefile")
+    for mk in $mkFile
+    do
+        echo "sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i $mk"
+        sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i $mk
+    done 
+}
 
-echo ttyS0,115200 > /sys/module/kgdboc/parameters/kgdboc
-echo g > /proc/sysrq-trigger
+function DebugVmlinux()
+{
+    echo ttyS0,115200 > /sys/module/kgdboc/parameters/kgdboc
+    echo g > /proc/sysrq-trigger
 
-gdb vmlinux
-#  >set serial baud 115200
-#  >target remote /dev/ttyUSB0
+    gdb vmlinux
+    #  >set serial baud 115200
+    #  >target remote /dev/ttyUSB0
+}
+
+ModifyMakeFile 
