@@ -6,7 +6,8 @@ export PLATFORM=PC
 
 function DownloadKernel()
 {
-    git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
+    #git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
+    git clone git://kernel.ubuntu.com/ubuntu/ubuntu-$(lsb_release --codename | cut -f2).git
 }
 
 function CompileKernel()
