@@ -1,4 +1,4 @@
-MODNAME=netlink
+MODNAME=sender
 ifeq ($(PLATFORM),PC)
 	KERNELDIR=/lib/modules/$(shell uname -r)/build
 EXTRA_CFLAGS=-Dsimple_DEBUG
@@ -7,11 +7,15 @@ else
 EXTRA_CFLAGS=-Dsimple_DEBUG
 endif
 
-obj-m += $(MODNAME).o
+CC=gcc
+
+LIBS= 
+SRCS=*.c
 
 default:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+	$(CC) -g -o $(MODNAME) $(SRCS) $(LIBS)
+
 clean:
-	rm -fr *.mod.* *.mod *.o  .$(MODNAME).* .tmp* Module.* modules.*
+	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.* *.img $(MODNAME) 
 
 
