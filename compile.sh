@@ -47,6 +47,9 @@ function CompileAllModule()
 {
     RootDir=$1
     ModsDir="$(find ${RootDir} -iname "Makefile")"
+    HostKoDir="/lib/modules/$(uname -r)/kernel"
+    echo "HostKoDir: ${HostKoDir}"
+    ls ${HostKoDir}
     for mod in $ModsDir
     do
         mod=${mod%/*}
