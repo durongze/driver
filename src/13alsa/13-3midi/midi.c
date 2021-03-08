@@ -2,9 +2,10 @@
 
 int main(int argc, char** argv)
 {
+    int stop;
     int err;
-    char *device_in;
-    char *device_out;
+    char *device_in = NULL;
+    char *device_out = NULL;
     int fd_in = -1,fd_out = -1;
     snd_rawmidi_t *handle_in = 0,*handle_out = 0;
     if (device_in) {

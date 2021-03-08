@@ -6,18 +6,18 @@ int main(int argc,char *argv[])
     int i=0;
     int err;
     char buf[128];
-    snd_pcm_t *playback_handle;
+    snd_pcm_t *playback_handle = NULL;
     int rate=22050;
     int channels=2;
-    snd_pcm_hw_params_t *hw_params;
+    snd_pcm_hw_params_t *hw_params = NULL;
 
-    if (argc != 2) {
-        fprintf(stderr,"usage:\n %s device \n", argv[0]);
-        exit(1);
+    char *dev_name = "default";
+    if (argc == 2) {
+        dev_name = argv[1];
+        fprintf(stderr,"usage:\n %s %s \n", argv[0], dev_name);
     }
-
-    if((err=snd_pcm_open(&playback_handle,argv[1],SND_PCM_STREAM_PLAYBACK,0))<0){
-        fprintf(stderr,"cant open audio device %s (%s)\n",argv[1],snd_strerror(err));
+    if((err=snd_pcm_open(&playback_handle, dev_name,SND_PCM_STREAM_PLAYBACK,0))<0){
+        fprintf(stderr,"cant open audio device %s (%s)\n", dev_name,snd_strerror(err));
         exit(1);
     }
     if((err=snd_pcm_hw_params_malloc(&hw_params))<0){
@@ -54,10 +54,10 @@ int main(int argc,char *argv[])
         exit(1);
     }
     i=0;
-    while(i<256)
+    while(i<1496)
 	{
 		memset(buf,i,128);
-		err=snd_pcm_writei(playback_handle,buf,32);
+		err=snd_pcm_writei(playback_handle,buf, i);
 		fprintf(stderr,"write to audio interface %d\n",err);
 		if(err<0)
 		{

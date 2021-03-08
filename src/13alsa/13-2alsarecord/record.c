@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <alsa/asoundlib.h>
 	  
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 	int i;
 	int err;
@@ -10,16 +10,13 @@ main (int argc, char *argv[])
 	int rate=22050;
 	snd_pcm_t *capture_handle;
 	snd_pcm_hw_params_t *hw_params;
-    
-    if (argc != 2) {
-        fprintf(stderr,"usage:\n %s device \n", argv[0]);
-        exit(1);
+    char *dev_name = "default"; 
+    if (argc == 2) {
+        dev_name = argv[1];
     }
 
-	if ((err = snd_pcm_open (&capture_handle, argv[1], SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-		fprintf (stderr, "cannot open audio device %s (%s)\n", 
-			 argv[1],
-			 snd_strerror (err));
+	if ((err = snd_pcm_open (&capture_handle, dev_name, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
+		fprintf (stderr, "cannot open audio device %s (%s)\n", dev_name, snd_strerror (err));
 		exit (1);
 	}
 	   
@@ -73,10 +70,9 @@ main (int argc, char *argv[])
 		exit (1);
 	}
 
-	for (i = 0; i < 10; ++i) {
+	for (i = 0; i < 1496; ++i) {
 		if ((err = snd_pcm_readi (capture_handle, buf, 128)) != 128) {
-			fprintf (stderr, "read from audio interface failed (%s)\n",
-				 snd_strerror (err));
+			fprintf (stderr, "read from audio interface failed (%s)\n", snd_strerror (err));
 			exit (1);
 		}
 	}
