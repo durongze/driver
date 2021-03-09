@@ -6,7 +6,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-main()
+int main()
 {
   int fd;
   int i;
@@ -37,4 +37,5 @@ main()
   printf("read successfully:%s\n",data);
 
   close(fd);
+  return 0;
 }

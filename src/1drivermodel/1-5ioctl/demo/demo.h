@@ -10,7 +10,7 @@
 #undef PDEBUG             /* undef it, just in case */
 #ifdef simple_DEBUG
 #ifdef __KERNEL__
-#    define PDEBUG(fmt, args...) printk( KERN_DEBUG "DEMO: " fmt, ## args)
+#    define PDEBUG(fmt, args...) printk( KERN_DEBUG "DEMO:%s:%d" fmt, __FUNCTION__, __LINE__, ## args)
 #else//usr space
 #    define PDEBUG(fmt, args...) fprintf(stderr, fmt, ## args)
 #endif
@@ -39,8 +39,6 @@ ssize_t simple_read(struct file *filp, char __user *buf, size_t count,
 ssize_t simple_write(struct file *filp, const char __user *buf, size_t count,
                     loff_t *f_pos);
 loff_t  simple_llseek(struct file *filp, loff_t off, int whence);
-int     simple_ioctl(struct inode *inode, struct file *filp,
-                    unsigned int cmd, unsigned long arg);
 
 
 #endif /* _simple_H_ */

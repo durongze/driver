@@ -69,6 +69,7 @@ struct file_operations simple_fops = {
 *******************************************************/
 void simple_cleanup_module(void)
 {
+    printk( KERN_DEBUG "---------------" );
 	dev_t devno = MKDEV(simple_MAJOR, simple_MINOR);
 
 	if (simple_devices) 
@@ -83,7 +84,7 @@ int simple_init_module(void)
 {
 	int result;
 	dev_t dev = 0;
-
+    PDEBUG("----------");
 	dev = MKDEV(simple_MAJOR, simple_MINOR);
 	result = register_chrdev_region(dev, 1, "DEMO");
 	if (result < 0) 
