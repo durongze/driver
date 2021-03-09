@@ -4,6 +4,15 @@
 
 export PLATFORM=PC
 
+function ExportKernelConfig()
+{
+    cat /boot/config-`uname -r`
+
+    sudo modprobe configs
+
+    zcat /proc/config.gz 
+}
+
 function DownloadKernel()
 {
     #git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
