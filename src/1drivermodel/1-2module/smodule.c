@@ -6,15 +6,22 @@
 
 static int itype=0;
 module_param(itype, int, 0);
-static int btype = 0;
+static bool btype = 0;
 module_param(btype, bool, 0);
 static unsigned char ctype=0;
 module_param(ctype, byte, 0);
 static char *stype=0;
 module_param(stype, charp, 0);
 
+static int demo_module_usage(void)
+{
+    printk("sudo insmod smodule.ko itype=100 btype=1 ctype='1' stype=\"hello\"");
+    return 0;
+}
+
 static int __init demo_module_init(void)
 {
+    demo_module_usage();
 	printk("simple module init\n");
 	printk("itype=%d\n",itype);
 	printk("btype=%d\n",btype);
