@@ -24,6 +24,7 @@
 
 #include <asm/types.h>          /* for videodev2.h */    
 
+// driver file : v4l2-dev.h 
 #include <linux/videodev2.h>    
 
 #define CLEAR(x) memset(&(x), 0, sizeof (x))    
