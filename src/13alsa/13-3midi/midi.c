@@ -1,5 +1,17 @@
 #include<alsa/asoundlib.h>
 
+int dump_pcm(int prefix, short *buf, int sz)
+{
+    printf(" %d\n", prefix);
+    for (int i = 0; i < sz; ++i){
+        printf("%04X ", buf[i]);
+        if ((i + 1) % 16 == 0) {
+            printf("\n");
+        }
+    }
+    printf("\n");
+}
+
 int main(int argc, char** argv)
 {
     int stop;
