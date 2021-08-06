@@ -4,6 +4,8 @@
 
 export PLATFORM=PC
 
+KernelCodeName="$(lsb_release --codename | cut -f2)"
+
 function ExportKernelConfig()
 {
     cat /boot/config-`uname -r`
@@ -15,11 +17,29 @@ function ExportKernelConfig()
 
 function DownloadKernel()
 {
-    #git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
-    git clone git://kernel.ubuntu.com/ubuntu/ubuntu-$(lsb_release --codename | cut -f2).git
+	echo $FUNCNAME
+    echo "git clone --depth=1 git://kernel.ubuntu.com/ubuntu/ubuntu-${KernelCodeName}.git"
+    git clone --depth=1 git://kernel.ubuntu.com/ubuntu/ubuntu-${KernelCodeName}.git
+}
+
+function DownloadRpiKernel()
+{
+	echo $FUNCNAME
+    git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
 }
 
 function CompileKernel()
+{
+	echo $FUNCNAME
+	KernelDir=$1
+	
+	pushd $KernelDir >> /dev/null
+    	cp /boot/config-`uname -r` .config
+		make
+	popd >> /dev/null
+}
+
+function CompileRpiKernel()
 {
     pushd linux
 
@@ -47,19 +67,23 @@ function CompileKernel()
 function CompileModule()
 {
     ModDir=$1
-    echo "$ModDir"
-    pushd $ModDir
-    make clean 
-    popd
+    echo -e "\033[32m $FUNCNAME $ModDir \033[0m"
+    pushd $ModDir >> /dev/null
+    	make clean 
+    popd >> /dev/null
+}
+
+function ListPcAllModule()
+{
+    HostKoDir="/lib/modules/$(uname -r)/kernel"
+    echo "HostKoDir: ${HostKoDir}"
+    ls ${HostKoDir}
 }
 
 function CompileAllModule()
 {
     RootDir=$1
     ModsDir="$(find ${RootDir} -iname "Makefile")"
-    HostKoDir="/lib/modules/$(uname -r)/kernel"
-    echo "HostKoDir: ${HostKoDir}"
-    ls ${HostKoDir}
     for mod in $ModsDir
     do
         mod=${mod%/*}
@@ -67,4 +91,6 @@ function CompileAllModule()
     done
 }
 
-CompileAllModule "."
+DownloadKernel
+CompileKernel "ubuntu-${KernelCodeName}"
+CompileAllModule "src"
