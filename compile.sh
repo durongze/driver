@@ -4,7 +4,38 @@
 
 export PLATFORM=PC
 
+UserInput=`echo -ne "\033"`
+
 KernelCodeName="$(lsb_release --codename | cut -f2)"
+
+function GetUserInput()
+{
+    akey=(0 0 0)
+    cESC=`echo -ne "\033"`
+
+    while :
+    do
+        #这里要注意，这里有-n选项，后跟一个数字，指定输入的字符长度最大值，
+        #所以不管key变量的值有多少个字符，都是一个值一个值做循环， 有多少个值就循环多少次
+        #输入键盘的上下左右键时，都有三个字符(ESC键算一个)，所以都是做三次循环，
+        #每做一次循环，akey的值都会发生改变
+        read -s -n 1 key
+
+        akey[0]=${akey[1]}
+        akey[1]=${akey[2]}
+        akey[2]=${key}
+
+        if [[ ${key} == ${cESC} && ${akey[1]} == ${cESC} ]];then
+            echo "ESC键"
+        elif [[ ${akey[0]} == ${cESC} && ${akey[1]} == "[" ]];then
+            if [[ ${key} == "A" ]];then echo "上键"
+            elif [[ ${key} == "B" ]];then echo "向下"
+            elif [[ ${key} == "D" ]];then echo "向左"
+            elif [[ ${key} == "C" ]];then echo "向右"
+            fi
+        fi
+    done
+}
 
 function ExportKernelConfig()
 {
@@ -17,26 +48,28 @@ function ExportKernelConfig()
 
 function DownloadKernel()
 {
-	echo $FUNCNAME
+    echo $FUNCNAME
     echo "git clone --depth=1 git://kernel.ubuntu.com/ubuntu/ubuntu-${KernelCodeName}.git"
     git clone --depth=1 git://kernel.ubuntu.com/ubuntu/ubuntu-${KernelCodeName}.git
 }
 
 function DownloadRpiKernel()
 {
-	echo $FUNCNAME
+    echo $FUNCNAME
     git clone --branch rpi-4.9.y-devel3 --depth=1 https://github.com/liuqun/linux.git
 }
 
 function CompileKernel()
 {
-	echo $FUNCNAME
-	KernelDir=$1
-	
-	pushd $KernelDir >> /dev/null
-    	cp /boot/config-`uname -r` .config
-		make
-	popd >> /dev/null
+    echo $FUNCNAME
+    KernelDir=$1
+    UserInput=$2
+    pushd $KernelDir >> /dev/null
+        cp /boot/config-`uname -r` .config
+        sudo make menuconfig 
+        sed -i 's/CONFIG_SYSTEM_TRUSTED_KEYS=.*/CONFIG_SYSTEM_TRUSTED_KEYS=""/g' .config
+        sudo make 
+    popd >> /dev/null
 }
 
 function CompileRpiKernel()
@@ -69,7 +102,11 @@ function CompileModule()
     ModDir=$1
     echo -e "\033[32m $FUNCNAME $ModDir \033[0m"
     pushd $ModDir >> /dev/null
-    	make clean 
+        make clean
+        #sudo make PLATFORM=${PLATFORM}
+        if [ $? -ne 0 ];then
+            exit
+        fi
     popd >> /dev/null
 }
 
@@ -91,6 +128,8 @@ function CompileAllModule()
     done
 }
 
-DownloadKernel
-CompileKernel "ubuntu-${KernelCodeName}"
-CompileAllModule "src"
+#GetUserInput 
+#DownloadKernel
+#CompileKernel "ubuntu-${KernelCodeName}"
+CompileAllModule "src" "${UserInput}"
+

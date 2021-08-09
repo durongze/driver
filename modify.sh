@@ -8,12 +8,15 @@ function ExportConfig()
 
 function ModifyMakeFile()
 {
+    CodeDir=$1
     # find ./ -iname "Makefile" | xargs -I {}  sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i {} 
-    mkFile=$(find ./ -iname "Makefile")
+    mkFile=$(find $CodeDir -iname "Makefile")
     for mk in $mkFile
     do
         echo "sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i $mk"
         sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i $mk
+        echo "sed -e '/clean:/a\\trm .*.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod' -i $mk"
+        sed -e '/clean:/a\\trm -fr .*.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod' -i $mk
     done 
 }
 
@@ -27,4 +30,4 @@ function DebugVmlinux()
     #  >target remote /dev/ttyUSB0
 }
 
-ModifyMakeFile 
+ModifyMakeFile "src"
