@@ -17,6 +17,7 @@ function ModifyMakeFile()
         sed '/.*KERNELDIR=/{n;/EXTRA_FLAGS=/ba;s!.*!EXTRA_CFLAGS=-Dsimple_DEBUG\n&!;:a}' -i $mk
         echo "sed -e '/clean:/a\\trm .*.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod' -i $mk"
         sed -e '/clean:/a\\trm -fr .*.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod' -i $mk
+        sed -e 's#KERNELDIR=/home/pi/linux#KERNELDIR=$(shell echo ${HOME})/linux#g' -i $mk
     done 
 }
 
