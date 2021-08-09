@@ -103,7 +103,7 @@ function CompileModule()
     echo -e "\033[32m $FUNCNAME $ModDir \033[0m"
     pushd $ModDir >> /dev/null
         make clean
-        #sudo make PLATFORM=${PLATFORM}
+        #make
         if [ $? -ne 0 ];then
             exit
         fi
@@ -126,6 +126,18 @@ function CompileAllModule()
         mod=${mod%/*}
         CompileModule "$mod"
     done
+}
+
+function InstallKernel()
+{
+    pushd ubuntu-${KernelCodeName} >> /dev/null
+        sudo make modules_install
+        sudo make install
+        sudo mkinitramfs -o /boot/initrd.img-5.4.124
+        sudo update-initramfs -c -k 5.4.124
+        sudo update-grub2
+        #sudo vi /boot/grub/grub.cfg # set timeout=30
+    popd >> dev/null
 }
 
 #GetUserInput 
