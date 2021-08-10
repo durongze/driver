@@ -1,0 +1,57 @@
+TTY_NAME=$(tty | cut -f3-4 -d'/')
+
+ClientIp=$(who | grep "${TTY_NAME}" |grep -E "[0-9]{1,3}(\.[0-9]{1,3}){3}" | cut -f2 -d'(' | cut -f1 -d')')
+ServerIpList=$(ifconfig | grep "inet " | awk '{print $2}')
+
+ServerIpList=$(ip addr | grep "inet " | awk -F' ' '{print $2}' | awk -F'/' '{print $1}')
+
+function GetServerIp()
+{
+    local cip="$1"
+    local sip="$2"
+    local realIp=""
+    local max=0
+
+    for curIp in $sip
+    do
+        local cnt=0
+        for idx in $(echo $curIp | tr -s "." " " | wc | awk '{print $2}' | xargs seq)
+        do
+            curSubNet=$(echo $curIp | awk -F'.' '{print $'"$idx"'}')
+            cSubNet=$(echo $cip | awk -F'.' '{print $'"$idx"'}')
+            if [[ "$curSubNet" = "$cSubNet" ]];then
+                cnt=$(expr $cnt + 1)
+            fi
+        done
+
+        if [[ $cnt -gt $max ]];then
+            max=$cnt
+            realIp=$curIp
+        fi
+    done
+    echo "$realIp"
+}
+
+ServerIp=$(GetServerIp "$ClientIp" "$ServerIpList")
+
+GateWay=$(ip route | grep "default" | awk -F' ' '{print $3}')
+export PS1="\u@${ServerIp} <= ${ClientIp}\n\w\n$"
+
+fileList="boost tcl8.6.11 protobuf leptonica libjpeg  libpng tiff430 tesseract"
+for tmpFile in ${fileList}
+do
+    TMP_FILE_HOME=${HOME}/opt/${tmpFile}
+    export C_INCLUDE_PATH=${TMP_FILE_HOME}/include:${C_INCLUDE_PATH}
+    export CPLUS_INCLUDE_PATH=${TMP_FILE_HOME}/include:${CPLUS_INCLUDE_PATH}
+    export LIBRARY_PATH=${TMP_FILE_HOME}/lib:${LIBRARY_PATH}
+    export LIBRARY_PATH=${TMP_FILE_HOME}/lib64:${LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${TMP_FILE_HOME}/lib:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${TMP_FILE_HOME}/lib64:${LD_LIBRARY_PATH}
+    export PKG_CONFIG_PATH=${TMP_FILE_HOME}/lib/pkgconfig/:${PKG_CONFIG_PATH}
+    export PKG_CONFIG_PATH=${TMP_FILE_HOME}/lib64/pkgconfig/:${PKG_CONFIG_PATH}
+    export CMAKE_MODULE_PATH=${TMP_FILE_HOME}/lib/cmake/:${CMAKE_MODULE_PATH}
+    export PATH=${TMP_FILE_HOME}/bin:${TMP_FILE_HOME}/sbin:$PATH
+done
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+export PATH=$PATH:/home/duyongze/code/chrome/depot_tools
+export TESSDATA_PREFIX=${HOME}/opt/tesseract/tessdata

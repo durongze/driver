@@ -103,7 +103,6 @@ function CompileModule()
     echo -e "\033[32m $FUNCNAME $ModDir \033[0m"
     pushd $ModDir >> /dev/null
         make clean
-        #make
         if [ $? -ne 0 ];then
             exit
         fi
@@ -140,8 +139,15 @@ function InstallKernel()
     popd >> dev/null
 }
 
+function FindKeyBoardDriver()
+{
+	DriverInfo=$(lspci -v | grep -A 5 "USB" | grep "driver" | cut -d":" -f2 | xargs -I {} modinfo {})
+	echo $DriverInfo
+	echo -e "\033[31m MODULE_SOFTDEP MODULE_LICENSE MODULE_DESCRIPTION \033[0m"
+}
+
 #GetUserInput 
 #DownloadKernel
 #CompileKernel "ubuntu-${KernelCodeName}"
 CompileAllModule "src" "${UserInput}"
-
+FindKeyBoardDriver
