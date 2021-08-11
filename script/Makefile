@@ -1,6 +1,7 @@
 sh_script=mysh
 sh_script_exec=$(sh_script).exe
 sh_script_srcs=$(sh_script).cc
+sh_script_libs=$(shell ls $(HOME)/opt)
 
 sh2cc_exec = sh2cc
 sh2cc_srcs = $(wildcard sh2cc.cc)
@@ -22,6 +23,7 @@ CXX_FLAGS +=-DENV_MAIN
 default:$(sh_script_exec) $(sh2cc_exec) $(env_exec)
 
 $(sh_script_srcs):$(sh2cc_exec) $(sh_script)
+	sed -e 's/fileList=.*/fileList=\"${sh_script_libs}\"/' -i $(sh_script)
 	./$(sh2cc_exec) $(sh_script)
 
 $(env_exec): $(env_objs) $(sh_script_srcs)

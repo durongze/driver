@@ -37,7 +37,7 @@ ServerIp=$(GetServerIp "$ClientIp" "$ServerIpList")
 GateWay=$(ip route | grep "default" | awk -F' ' '{print $3}')
 export PS1="\u@${ServerIp} <= ${ClientIp}\n\w\n$"
 
-fileList="boost tcl8.6.11 protobuf leptonica libjpeg  libpng tiff430 tesseract"
+fileList="bin leptonica libjpeg libpng tesseract tiff430"
 for tmpFile in ${fileList}
 do
     TMP_FILE_HOME=${HOME}/opt/${tmpFile}
