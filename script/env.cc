@@ -67,38 +67,74 @@ struct tm* get_cur_time()
     return localtime(&timeNow);
 }
 
-const std::string gen_cmd()
+struct tm sub_time(struct tm &run_time, struct tm &cur_time)
+{
+    struct tm ret;
+    ret.tm_sec = cur_time.tm_sec - run_time.tm_sec;
+    if (ret.tm_sec < 0) {
+        ret.tm_sec += 60;
+        cur_time.tm_min -= 1;
+    }
+    ret.tm_min = cur_time.tm_min - run_time.tm_min;
+    if (ret.tm_min < 0) {
+        ret.tm_min += 60;
+        cur_time.tm_hour -= 1;
+    }
+
+    ret.tm_hour = cur_time.tm_hour - run_time.tm_hour;
+    ret.tm_hour += ret.tm_hour < 0 ? 24 : 0;
+    return ret;
+}
+
+int tm_to_sec(struct tm &t)
+{
+    int sec = 0;
+    sec += t.tm_hour * 60 * 60;
+    sec += t.tm_min * 60;
+    sec += t.tm_sec;
+    return sec;
+}
+
+const std::string gen_cmd(const std::string &args)
 {
     std::string cmd;
-    cmd += "dmake";
-    cmd += " -h ";
+    cmd += "rm";
+    cmd += " -f ";
+    cmd += args;
+    std::string ps1;
+    do {
+        sleep(1);
+        ps1 = getenv("PS1");
+    }while(ps1.find("\\n\\w\\n") < 0);
     return cmd;
 }
 
-std::string to_str(struct tm* tm_) 
+std::string to_str(const struct tm &tm_) 
 {
-	std::ostringstream oss;
-	oss << tm_->tm_hour << ":" << tm_->tm_min << ":" << tm_->tm_sec;
-	return oss.str();
+    std::ostringstream oss;
+    oss << tm_.tm_hour << ":" << tm_.tm_min << ":" << tm_.tm_sec;
+    return oss.str();
 }
 
-int deamon_main(std::ofstream &fout, const char *my_sh, std::string &run_tm, std::string &cur_tm)
+int deamon_main(std::ofstream &fout, const char *my_sh, struct tm &run_tm, struct tm &cur_tm)
 {
     // The big loop
-	gen_shell_script(my_sh);
+    gen_shell_script(my_sh);
+    fout << "mysh:" << my_sh << endl;        
     while (true)
     {
-        cur_tm = to_str(get_cur_time());
-		fout << "wait:" << run_tm << " vs " << cur_tm << endl;        
-        if (run_tm < cur_tm) {
-            fout << gen_cmd().c_str() << endl;
-            system(gen_cmd().c_str());
-            std::remove(my_sh);
+        cur_tm = *get_cur_time();
+        struct tm diff = sub_time(run_tm, cur_tm);
+        fout << to_str(run_tm) << " vs " << to_str(cur_tm) << " " << to_str(diff) << endl;        
+        if (tm_to_sec(diff) > 0)
+        {
+            fout << gen_cmd(my_sh).c_str() << endl;
+            system(gen_cmd(my_sh).c_str());
             break;
+        } else {
+            sleep(4);
         }
-        sleep(4);
     }
-	fout << "over:" << run_tm << " vs " << cur_tm << endl;        
     return 0;
 }
 
@@ -106,11 +142,11 @@ int main(int argc, char **argv)
 {
     const char *workdir="./";
     const char *logfile="/tmp/daemon.log";
-	
-	std::string my_sh = "/tmp/mysh";
     
-	std::string run_tm = to_str(get_cur_time());
-    std::string cur_tm = to_str(get_cur_time());
+    std::string my_sh = "/tmp/mysh";
+    
+    struct tm run_tm = (*get_cur_time());
+    struct tm cur_tm = (*get_cur_time());
 
     // Open any logs here
     ofstream fout(logfile, std::ios::trunc);
@@ -121,7 +157,7 @@ int main(int argc, char **argv)
     }
     
     deamon_start(workdir, fout);
-	deamon_main(fout, workdir, run_tm, cur_tm);
-	return 0;
+    deamon_main(fout, my_sh.c_str(), run_tm, cur_tm);
+    return 0;
 }
 
