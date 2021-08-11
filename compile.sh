@@ -7,6 +7,7 @@ export PLATFORM=PC
 UserInput=`echo -ne "\033"`
 
 KernelCodeName="$(lsb_release --codename | cut -f2)"
+KernelDir="ubuntu-${KernelCodeName}"
 
 function GetUserInput()
 {
@@ -144,10 +145,13 @@ function FindKeyBoardDriver()
 	DriverInfo=$(lspci -v | grep -A 5 "USB" | grep "driver" | cut -d":" -f2 | xargs -I {} modinfo {})
 	echo $DriverInfo
 	echo -e "\033[31m MODULE_SOFTDEP MODULE_LICENSE MODULE_DESCRIPTION \033[0m"
+	echo "make menuconfig -> \"/\" -> \"name\" -> path(${KernelDir}/drivers/usb/host)"
+	echo "make menuconfig -> \"/\" -> DYNAMIC_DEBUG -> ${KernelDir}/Documentation/filesystems/debugfs.txt"
+	echo "sudo cat /sys/kernel/debug/dynamic_debug/control"
 }
 
 #GetUserInput 
 #DownloadKernel
-#CompileKernel "ubuntu-${KernelCodeName}"
+#CompileKernel "KernelDir" 
 CompileAllModule "src" "${UserInput}"
 FindKeyBoardDriver
