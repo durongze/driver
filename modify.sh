@@ -34,4 +34,13 @@ function DebugVmlinux()
     #  >target remote /dev/ttyUSB0
 }
 
-ModifyMakeFile "src"
+function GenVimrcFile()
+{
+	VimrcFile=${HOME}/.vimrc
+	echo "set nu" > ${VimrcFile}
+	echo "set tabstop=4" >> ${VimrcFile}
+	echo "set tags=~/code/kernel/driver/ubuntu-focal/tags" >> ${VimrcFile}
+}
+
+#ModifyMakeFile "src"
+GenVimrcFile

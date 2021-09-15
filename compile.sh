@@ -98,14 +98,29 @@ function CompileRpiKernel()
     popd
 }
 
+function RunModule()
+{
+	KoFile=$(ls *.ko)
+	for kf in $KoFile
+    do
+        KoName=${kf%.*}
+        sudo insmod $kf
+        echo "KoName:$KoName"
+		sudo rmmod $KoName
+    done
+}
+
 function CompileModule()
 {
     ModDir=$1
     echo -e "\033[32m $FUNCNAME $ModDir \033[0m"
     pushd $ModDir >> /dev/null
-        make clean
+        Log=$(make -f Makefile)
         if [ $? -ne 0 ];then
-            exit
+           echo "make : $Log"  
+           exit
+        else
+           RunModule
         fi
     popd >> /dev/null
 }
@@ -120,8 +135,8 @@ function ListPcAllModule()
 function CompileAllModule()
 {
     RootDir=$1
-    ModsDir="$(find ${RootDir} -iname "Makefile")"
-    for mod in $ModsDir
+    ModsDir="$(find ${RootDir} -iname "Makefile" | sort -u)"
+    for mod in $(echo $ModsDir | sort)
     do
         mod=${mod%/*}
         CompileModule "$mod"

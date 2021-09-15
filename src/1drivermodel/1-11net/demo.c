@@ -162,7 +162,7 @@ int simnettx(struct sk_buff *skb, struct net_device *dev)
 /*
  * Deal with a transmit timeout.
  */
-void simnettx_timeout (struct net_device *dev)
+void simnettx_timeout (struct net_device *dev, unsigned int x)
 {
     //struct simnetpriv *priv = (struct simnetpriv *) dev->priv;
     struct simnetpriv *priv = (struct simnetpriv *) netdev_priv(dev);
@@ -228,6 +228,7 @@ struct net_device_ops simnet_ops =
     .ndo_change_mtu = simnetchange_mtu,
     .ndo_tx_timeout = simnettx_timeout,
 };
+
 void simnetinit(struct net_device *dev)
 {
 	struct simnetpriv *priv;
@@ -281,16 +282,18 @@ int simnetinit_module(void)
 	/* Allocate the devices */
 	/*simnetdevs=alloc_netdev(sizeof(struct simnetpriv), "eth%d",
 			simnetinit);*/
-	simnetdevs=alloc_netdev(sizeof(struct simnetpriv), "eth%d", NET_NAME_UNKNOWN, simnetinit);
-	if (simnetdevs == NULL)
+	simnetdevs = alloc_netdev(sizeof(struct simnetpriv), "eth%d", NET_NAME_UNKNOWN, simnetinit);
+	if (simnetdevs == NULL) {
 		goto out;
+	}
 
 	ret = -ENODEV;
-	if ((result = register_netdev(simnetdevs)))
+	if ((result = register_netdev(simnetdevs))) {
 		printk("demo: error %i registering device \"%s\"\n",result, simnetdevs->name);
-	else
+	} else {
 		ret = 0;
-   out:
+	}
+out:
 	if (ret) 
 		simnetcleanup();
 	return ret;
