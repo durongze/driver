@@ -12,6 +12,36 @@
 #define NETLINK_SAMPLE 21
 #define MAX_PAYLOAD 1024
 
+int init_sockaddr_nl(struct sockaddr_nl *addr, int pid)
+{
+    memset(addr, 0, sizeof(struct sockaddr_nl));
+    addr->nl_family = AF_NETLINK;
+    addr->nl_pid = pid;
+    addr->nl_groups = 0;
+	return 0;
+}
+
+struct nlmsghdr *create_nlmsghdr(const char *msg, int msg_len)
+{
+	struct nlmsghdr *nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(MAX_PAYLOAD));
+    nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
+    nlh->nlmsg_pid = getpid();
+    nlh->nlmsg_flags = 0;
+    strncpy(NLMSG_DATA(nlh), msg, msg_len);
+	return nlh;
+}
+
+struct msghdr *create_msghdr(struct sockaddr_nl *addr, struct iovec *iov)
+{
+	struct msghdr *msg = (struct msghdr*)malloc(sizeof(struct msghdr));
+    memset(msg, 0, sizeof(msg));
+    msg->msg_name = (void *)addr;
+    msg->msg_namelen = sizeof(struct sockaddr_nl);
+    msg->msg_iov = iov;
+    msg->msg_iovlen = 1;
+	return msg;
+}
+
 int main(int argc, char* argv[])
 {
     //struct sockaddr_nl {
@@ -37,7 +67,6 @@ int main(int argc, char* argv[])
     //        __kernel_size_t iov_len; /* Must be size_t (1003.1g) */
     //};
     struct iovec iov;
-    int sock_fd;
 
     //    struct msghdr {
     //        void        *msg_name;  /* ptr to socket address structure */
@@ -48,38 +77,32 @@ int main(int argc, char* argv[])
     //        unsigned int    msg_flags;  /* flags on received message */
     //        struct kiocb    *msg_iocb;  /* ptr to iocb for async requests */
     //    }; 
-    struct msghdr msg;
+    struct msghdr *msg;
 
-    sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_SAMPLE);
-
-    memset(&msg, 0, sizeof(msg));
-    memset(&src_addr, 0, sizeof(src_addr));
-    src_addr.nl_family = AF_NETLINK;
-    src_addr.nl_pid = getpid(); 
-    src_addr.nl_groups = 0;
-    bind(sock_fd, (struct sockaddr*)&src_addr, sizeof(src_addr));
+    int sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_SAMPLE);
     
-    memset(&dest_addr, 0, sizeof(dest_addr));
-    dest_addr.nl_family = AF_NETLINK;
-    dest_addr.nl_pid = 0;
-    dest_addr.nl_groups = 0;
-    nlh=(struct nlmsghdr *)malloc(NLMSG_SPACE(MAX_PAYLOAD));
-    nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
-    nlh->nlmsg_pid = getpid();
-    nlh->nlmsg_flags = 0;
-    strcpy(NLMSG_DATA(nlh), "Hello kernel!");
-
-    iov.iov_base = (void *)nlh;
+	init_sockaddr_nl(&src_addr, getpid());
+    bind(sock_fd, (struct sockaddr*)&src_addr, sizeof(src_addr));
+   
+    init_sockaddr_nl(&dest_addr, 0);
+    
+	const char *hello = "hello kernel!";
+	nlh = create_nlmsghdr(hello, strlen(hello));
+    
+	iov.iov_base = (void *)nlh;
     iov.iov_len = nlh->nlmsg_len;
-    msg.msg_name = (void *)&dest_addr;
-    msg.msg_namelen = sizeof(dest_addr);
-    msg.msg_iov = &iov;
-    msg.msg_iovlen = 1;
-    sendmsg(sock_fd, &msg, 0);
-    printf("Send message payload: %s\n",NLMSG_DATA(nlh));
+    
+	msg = create_msghdr(&dest_addr, &iov);
+ 
+    sendmsg(sock_fd, msg, 0);
+    printf("Send message payload: %s\n", (char*)NLMSG_DATA(nlh));
 
     memset(nlh, 0, NLMSG_SPACE(MAX_PAYLOAD));
-    recvmsg(sock_fd, &msg, 0);
-    printf("Received message payload: %s\n",NLMSG_DATA(nlh));
+    recvmsg(sock_fd, msg, 0);
+    printf("Received message payload: %s\n", (char*)NLMSG_DATA(nlh));
+	
+	free((void*)nlh);
+	free((void*)msg);
     close(sock_fd);
+	return 0;
 }

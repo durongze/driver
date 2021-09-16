@@ -9,10 +9,21 @@ endif
 
 obj-m += $(MODNAME).o
 
+IS_EXIST=$(shell lsmod | grep ${MODNAME})
+
+ifeq ($(IS_EXIST),)
+    IS_EXIST="$(shell modinfo ${MODNAME}.ko)"
+else
+    IS_EXIST="$(shell sudo rmmod ${MODNAME})"
+endif
+
 default:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod
 	rm -fr *.mod.* *.mod *.o  .$(MODNAME).* .tmp* Module.* modules.*
-
+test:default
+	@echo ${MODNAME} status : ${IS_EXIST} .
+	sudo insmod ${MODNAME}.ko
+	#sudo rmmod ${MODNAME}
 
