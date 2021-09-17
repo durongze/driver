@@ -6,6 +6,7 @@
 #include <net/netlink.h>
 
 #define NETLINK_SAMPLE 22//ÀàÐÍ
+#define MAX_PAYLOAD 1200
 
 struct sock *nl_sk = NULL;
 
@@ -32,12 +33,12 @@ bool skb_get_data(struct sk_buff *__skb, char *data, int *data_len, unsigned int
 struct sk_buff *skb_create(int data_len, char *data)
 {
 	struct nlmsghdr *nlh = NULL;
-	int len = NLMSG_SPACE(1200);
+	int len = NLMSG_SPACE(MAX_PAYLOAD);
 	struct sk_buff *skb = alloc_skb(len, GFP_ATOMIC);
 	if (!skb) {
 		return skb;
 	}
-	nlh = nlmsg_put(skb, 0, 0, 0, 1200, 0);
+	nlh = nlmsg_put(skb, 0, 0, 0, MAX_PAYLOAD, 0);
 	nlh->nlmsg_len = data_len;
 	// NETLINK_CB(skb).pid = 0;
 	NETLINK_CB(skb).creds.pid = 0;

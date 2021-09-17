@@ -10,7 +10,7 @@ endif
 CC=gcc
 
 LIBS= 
-SRCS=*.c
+SRCS=send*.c
 
 DRVNAME=netlink
 IS_EXIST=$(shell lsmod | grep ${DRVNAME})
@@ -23,6 +23,7 @@ endif
 
 default:
 	$(CC) -g -o $(MODNAME) $(SRCS) $(LIBS)
+	$(CC) -g -o sniffer sniffer.c 
 
 test:default
 	@echo driver ${IS_EXIST}
