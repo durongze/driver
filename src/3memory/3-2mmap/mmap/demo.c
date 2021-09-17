@@ -35,29 +35,31 @@ volatile void *virt_to_kseg(volatile void *address)
 	pgd = pgd_offset_k(va);
 
 	/* check whether we found an entry */
-	if (!pgd_none(*pgd))
-        {
-	      /* get the page middle directory */
-	      pmd = pmd_offset(pgd, va);
-	      /* check whether we found an entry */
-	      if (!pmd_none(*pmd))
-           {
-				/* get a pointer to the page table entry */
-				preempt_disable();
-				ptep = pte_offset_map(pmd, va);
-				pte = *ptep;
-				/* check for a valid page */
-				if (pte_present(pte))
-				{
-		        /* get the address the page is refering to */
-		        ret = (unsigned long)page_address(pte_page(pte));
-				/* add the offset within the page to the page address */
-				ret |= (va & (PAGE_SIZE -1));
-				}
-				pte_unmap(ptep);
-				preempt_enable();
-	      }
+	if (pgd_none(*pgd))
+    {
+		return((volatile void *)ret);
 	}
+    /* get the page middle directory */
+    pmd = pmd_offset(pgd, va);
+    /* check whether we found an entry */
+    if (pmd_none(*pmd))
+    {
+		return((volatile void *)ret);
+    }
+	/* get a pointer to the page table entry */
+	preempt_disable();
+	ptep = pte_offset_map(pmd, va);
+	pte = *ptep;
+	/* check for a valid page */
+	if (pte_present(pte))
+	{
+		/* get the address the page is refering to */
+		ret = (unsigned long)page_address(pte_page(pte));
+		/* add the offset within the page to the page address */
+		ret |= (va & (PAGE_SIZE -1));
+	}
+	pte_unmap(ptep);
+	preempt_enable();
 	return((volatile void *)ret);
 }
 
