@@ -60,6 +60,7 @@ ssize_t simple_read(struct file *filp, char __user *buf, size_t count,loff_t *f_
 	if (down_interruptible(&dev->sem))
 		return -ERESTARTSYS;
 	
+	PDEBUG("buf(%ld):%s", count, buf);
 	if (copy_to_user(buf,demoBuffer,count))
 	{
 	   count=-EFAULT; /* 把数据写到应用程序空间 */
@@ -84,6 +85,7 @@ ssize_t simple_write(struct file *filp, const char __user *buf, size_t count,lof
 		retval = -EFAULT;
 		goto out;
 	}
+	PDEBUG("buf(%ld):%s", count, buf);
 	
 	up(&dev->sem);
 	flag = 1;

@@ -10,9 +10,9 @@
 #undef PDEBUG             /* undef it, just in case */
 #ifdef simple_DEBUG
 #ifdef __KERNEL__
-#    define PDEBUG(fmt, args...) printk( KERN_DEBUG "DEMO: " fmt, ## args)
+#    define PDEBUG(fmt, args...) printk( KERN_DEBUG "[%s:%d]" fmt, __FUNCTION__, __LINE__, ## args)
 #else//usr space
-#    define PDEBUG(fmt, args...) fprintf(stderr, fmt, ## args)
+#    define PDEBUG(fmt, args...) fprintf(stderr, "[%s:%d]" fmt, __FUNCTION__, __LINE__, ## args)
 #endif
 #else
 #  define PDEBUG(fmt, args...) /* not debugging: nothing */
