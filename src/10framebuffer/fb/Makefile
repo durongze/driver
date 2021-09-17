@@ -14,6 +14,9 @@ SRCS=*.c
 
 default:
 	$(CC) -g -o $(MODNAME) $(SRCS) $(LIBS)
+test:
+	ls -l /dev/fb0
+	cat /proc/devices | grep "fb"
 
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod

@@ -11,9 +11,14 @@ CC=gcc
 
 LIBS= -lasound
 SRCS=*.c
+INPUT_DEVS:=$(shell ls /dev/input/even*)
 
 default:
 	$(CC) -g -o $(MODNAME) $(SRCS) $(LIBS)
+
+test:
+	@echo "INPUT_DEVS:${INPUT_DEVS}"
+	@for d in $(INPUT_DEVS) ; do echo "\033[32mdev:$$d \033[0m"; sudo ./ioctl $$d; done;
 
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod
