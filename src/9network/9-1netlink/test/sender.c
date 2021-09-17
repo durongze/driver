@@ -9,7 +9,7 @@
 #include <linux/netlink.h>
 #include <linux/socket.h>
 
-#define NETLINK_SAMPLE 21
+#define NETLINK_SAMPLE 22
 #define MAX_PAYLOAD 1024
 
 int init_sockaddr_nl(struct sockaddr_nl *addr, int pid)
