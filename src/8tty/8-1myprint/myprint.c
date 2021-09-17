@@ -12,20 +12,21 @@ static void my_print(char *str)
 	my_tty = current->signal->tty;
 	if (my_tty != NULL) 
 	{
-		((my_tty->driver)->ops->write) (my_tty,str,	strlen(str));
-		((my_tty->driver)->ops->write) (my_tty,"......\n",	7);
+		((my_tty->driver)->ops->write) (my_tty, "\n......\n",	7);
+		((my_tty->driver)->ops->write) (my_tty, str, strlen(str));
+		((my_tty->driver)->ops->write) (my_tty, "\n......\n",	7);
 	}
 }
 
 static int __init my_print_init(void)
 {
-	my_print("my_print_init!");
+	my_print("my_print_init!\n");
 	return 0;
 }
 
 static void __exit my_print_exit(void)
 {
-	my_print("my_print_exit!");
+	my_print("my_print_exit!\n");
 }
 
 module_init(my_print_init);
