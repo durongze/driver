@@ -12,7 +12,7 @@ CC=gcc
 LIBS= 
 SRCS=*.c
 
-DRVNAME=netlink
+DRVNAME=i2c
 IS_EXIST=$(shell lsmod | grep ${DRVNAME})
 
 ifeq ($(IS_EXIST),)

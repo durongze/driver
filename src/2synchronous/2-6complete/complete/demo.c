@@ -21,6 +21,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 struct simple_dev *simple_devices;
 struct completion comp;
 static unsigned char simple_inc=0;
+static char kernel_buffer[256];
 
 int simple_open(struct inode *inode, struct file *filp)
 {
@@ -43,14 +44,20 @@ int simple_release(struct inode *inode, struct file *filp)
 ssize_t simple_read(struct file *filp, char __user *buf, size_t count,loff_t *f_pos)
 {
 	wait_for_completion(&comp); 
-        printk("simple_read: wait_for_completion\n");
+    PDEBUG("simple_read: wait_for_completion\n");
+	if (copy_to_user(buf, kernel_buffer, count)) {
+    	PDEBUG("copy_to_user: %s <- %s\n", buf, kernel_buffer);
+	}
 	return 0;
 }
 
 ssize_t simple_write(struct file *filp, const char __user *buf, size_t count,loff_t *f_pos)
 {
 	complete(&comp); 
-	printk("simple_write: complete\n");
+	PDEBUG("simple_write: complete\n");
+	if (copy_from_user(kernel_buffer, buf, count)) {
+    	PDEBUG("copy_from_user: %s <- %s\n", kernel_buffer, buf);
+	}
 	return count; 
 }
 
