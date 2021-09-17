@@ -1,4 +1,5 @@
-MODNAME=rcu
+MODNAME=test
+
 ifeq ($(PLATFORM),PC)
 	KERNELDIR=/lib/modules/$(shell uname -r)/build
        EXTRA_CFLAGS=-Dsimple_DEBUG
@@ -7,27 +8,30 @@ else
        EXTRA_CFLAGS=-Dsimple_DEBUG
 endif
 
-obj-m += $(MODNAME).o
+CC=gcc
 
-IS_EXIST=$(shell lsmod | grep ${MODNAME})
+LIBS= 
+SRCS=*.c
+
+DRVNAME=rcu
+IS_EXIST=$(shell lsmod | grep ${DRVNAME})
 
 ifeq ($(IS_EXIST),)
-    IS_EXIST="$(shell modinfo ${MODNAME}.ko)"
+    IS_EXIST=" none"
 else
-    IS_EXIST="$(shell sudo rmmod ${MODNAME})"
+    IS_EXIST=" exist"
 endif
 
 default:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+	$(CC) -g -o $(MODNAME) $(SRCS) $(LIBS)
 
 test:default
-	@echo ${MODNAME} status : ${IS_EXIST} .
-	sudo insmod ${MODNAME}.ko
+	@echo driver ${IS_EXIST}
 	$(shell if [ ! -f /dev/fgj ]; then sudo mknod /dev/fgj c 224 0 ; fi;)
-	#sudo rmmod ${MODNAME}
+	sudo ./${MODNAME}
 
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod
-	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.*
+	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.* *.img $(MODNAME) 
 
 
