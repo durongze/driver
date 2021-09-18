@@ -1,33 +1,40 @@
+#include <linux/version.h>
 #include <linux/module.h>
 #include <linux/interrupt.h> 
+#include <linux/time.h>
 
-int myint_for_something=1;
-void tasklet_function(unsigned long);
-char tasklet_data[64];
+#define PDEBUG(fmt, args...) printk( "%s:[%s:%d]:" fmt, KBUILD_MODNAME, __FUNCTION__, __LINE__, ## args)
 
-DECLARE_TASKLET(test_tasklet,tasklet_function, (unsigned long) &tasklet_data);
+void tasklet_function(struct tasklet_struct *arg);
 
-void tasklet_function(unsigned long data)
+DECLARE_TASKLET(test_tasklet, tasklet_function);
+
+void tasklet_pfunc(unsigned long data)
 {
-	struct timeval now;
-	do_gettimeofday(&now);
-	printk("%s at %ld,%ld\n",
-		(char *) data,
-		now.tv_sec,
-		now.tv_usec);
+	PDEBUG("data:%ld\n", data);
+}
+
+void tasklet_function(struct tasklet_struct *data)
+{
+	PDEBUG("next:%p,state:%lu,count:%d,func:%p,data:%ld\n",
+		 data->next, data->state, data->count.counter, data->func, data->data);
 }
 
 int init_module_task(void) 
 {
-	sprintf(tasklet_data,"%s\n",
-		"Linux tasklet called in init_module");
 	tasklet_schedule(&test_tasklet);
+	PDEBUG("tasklet_schedule ");
+	return 0;
 }
 
 void cleanup_moduletask(void)
 {
+	PDEBUG("  ");
 	return ;
 }
 
 module_init(init_module_task);
 module_exit(cleanup_moduletask);
+
+MODULE_AUTHOR("fgjnew@163.com");
+MODULE_LICENSE("Dual BSD/GPL");
