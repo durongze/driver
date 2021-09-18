@@ -4,6 +4,8 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 
+#define PDEBUG(fmt, args...) printk("[%s:%d]" fmt, __FUNCTION__, __LINE__, ## args)
+
 struct simplelist
 {
 	struct list_head node;
@@ -12,29 +14,47 @@ struct simplelist
 
 LIST_HEAD(mylist);
 
-static int demo_module_init(void)
+struct simplelist *create_list_node(void)
+{
+	struct simplelist *p;
+	p = (struct simplelist *)kmalloc(sizeof(struct simplelist),GFP_KERNEL);
+	return p;
+}
+
+int create_simple_list(int size)
 {
 	int i=0;
-	struct simplelist* slistp;
-
-	printk("demo_module_init\n");
-	for(i=0;i<5;i++)
-	{
-		struct simplelist*p=(struct simplelist *)kmalloc(sizeof(struct simplelist),GFP_KERNEL);
-		p->buffer=0x31+i;
+	struct simplelist *p;
+	for(i = 0; i < size; i++) {
+		p = create_list_node();
+		p->buffer = 0x31+i;
 		list_add_tail(&p->node,&mylist);
 	}
-	list_for_each_entry(slistp,&mylist,node){
-		printk("find a list buffer is %c\n",slistp->buffer);
-	}
+	return 0;
+}
 
+void each_simple_list(void)
+{
+	struct simplelist* slistp;
+	list_for_each_entry(slistp, &mylist, node) {
+		PDEBUG("find a list buffer is %c\n", slistp->buffer);
+	}
+	return ;
+}
+
+static int demo_module_init(void)
+{
+	PDEBUG("demo_module_init\n");
+	create_simple_list(5);
+	each_simple_list();
 	return 0;
 }
 
 static void demo_module_exit(void)
 {
-	printk("demo_module_exit\n");
+	PDEBUG("demo_module_exit\n");
 }
+
 module_init(demo_module_init);
 module_exit(demo_module_exit);
 
