@@ -15,6 +15,9 @@ SRCS=*.c
 default:
 	$(CC) -g -o $(MODNAME) $(SRCS) $(LIBS)
 
+test:default
+	./${MODNAME}
+
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod
 	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.* *.img $(MODNAME) 
