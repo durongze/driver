@@ -2,6 +2,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
+
 void main()
 {
 	int fd;
