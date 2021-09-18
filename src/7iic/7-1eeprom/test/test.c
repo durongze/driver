@@ -11,12 +11,11 @@
 #define I2C_TIMEOUT     0x0702
 #define I2C_SLAVE       0x0703
 #define I2C_TENBIT      0x0704
-
-   
+ 
 #define CHIP_ADDR 0x50  // 设备地址    
 #define PAGE_SIZE 8    //页写入大小    
 #define I2C_DEV   "/dev/i2c-0"    
-   
+ 
 static int read_eeprom (int fd,char buff[],int addr,int count)   
 {   
   int res;   
@@ -40,12 +39,11 @@ static int write_eeprom (int fd, char buff[],int addr,int count)
    
 int main(void)   
 {   
-   int fd,n,res;   
-   unsigned char buf[PAGE_SIZE]={1,2,3,4,5,6,7,8};   
+  int fd,n,res;   
+  unsigned char buf[PAGE_SIZE] = {1, 2, 3, 4, 5, 6, 7, 8};   
       
   fd = open(I2C_DEV,O_RDWR);   
-  if(fd<0)   
-  {   
+  if (fd < 0) {   
   	perror("open");
     return(-1);   
   }   
@@ -59,8 +57,7 @@ int main(void)
   memset(buf, 0, sizeof(buf));
   read_eeprom(fd, buf, 0, sizeof(buf));   
 
-  for(n= 0;n<sizeof(buf);n++)
-  {
+  for(n = 0; n < sizeof(buf); n++) {
 	printf("0x%x\n",buf[n]);
   } 
   close(fd);
