@@ -9,7 +9,7 @@ endif
 
 CC=gcc
 
-LIBS= 
+LIBS=-lpthread 
 SRCS=*.c
 
 default:

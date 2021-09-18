@@ -17,7 +17,7 @@
 #define ONE_K 10
 #define ONE_M (ONE_K * ONE_K)
 #define MMAP_DRV "mmapdrv"
-#define PDEBUG(fmt, args...) printk("[%s:%d]" fmt, __FUNCTION__, __LINE__, ## args)
+#define PDEBUG(fmt, args...) printk("%s:[%s:%d]" fmt, KBUILD_MODNAME, __FUNCTION__, __LINE__, ## args)
 
 static int mem_start = 101, mem_size = 10;
 static char *reserve_virt_addr;

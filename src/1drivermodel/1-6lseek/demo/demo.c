@@ -124,7 +124,7 @@ int simple_init_module(void)
 	result = register_chrdev_region(dev, 1, "DEMO");
 	if (result < 0) 
 	{
-		printk(KERN_WARNING "DEMO: can't get major %d\n", simple_MAJOR);
+		PDEBUG(KERN_WARNING "DEMO: can't get major %d\n", simple_MAJOR);
 		return result;
 	}
 
@@ -142,7 +142,7 @@ int simple_init_module(void)
 	result = cdev_add (&simple_devices->cdev, dev, 1);
 	if(result)
 	{
-		printk(KERN_NOTICE "Error %d adding DEMO\n", result);
+		PDEBUG(KERN_NOTICE "Error %d adding DEMO\n", result);
 		goto fail;
 	}
     memcpy(demoBuffer,"ABCDEFGHIJKLMN",14);

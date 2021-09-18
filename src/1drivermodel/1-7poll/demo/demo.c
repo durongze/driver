@@ -46,9 +46,9 @@ int simple_release(struct inode *inode, struct file *filp)
 
 ssize_t simple_read(struct file *filp, char __user *buf, size_t count,loff_t *f_pos)
 {
-	//printk("wait_event_interruptible before\n");
+	//PDEBUG("wait_event_interruptible before\n");
 	wait_event_interruptible(read_queue, simple_flag);
-	//printk("wait_event_interruptible after\n");
+	//PDEBUG("wait_event_interruptible after\n");
 	if (copy_to_user(buf,demoBuffer,count))
 	{
 		count=-EFAULT;
@@ -73,9 +73,9 @@ out:
 unsigned int simple_poll(struct file * file, poll_table * pt)
 {
 	unsigned int mask = POLLIN | POLLRDNORM;
-	//printk("poll_wait before\n");
+	//PDEBUG("poll_wait before\n");
 	poll_wait(file, &read_queue, pt);
-	//printk("poll_wait after\n");
+	//PDEBUG("poll_wait after\n");
 	return mask;
 }
 
@@ -113,7 +113,7 @@ int simple_init_module(void)
 	result = register_chrdev_region(dev, 1, "DEMO");
 	if (result < 0) 
 	{
-		printk(KERN_WARNING "DEMO: can't get major %d\n", simple_MAJOR);
+		PDEBUG(KERN_WARNING "can't get major %d\n", simple_MAJOR);
 		return result;
 	}
 	
@@ -131,7 +131,7 @@ int simple_init_module(void)
 	result = cdev_add (&simple_devices->cdev, dev, 1);
 	if(result)
 	{
-		printk(KERN_NOTICE "Error %d adding DEMO\n", result);
+		PDEBUG(KERN_NOTICE "Error %d adding DEMO\n", result);
 		goto fail;
 	}
     init_waitqueue_head(&read_queue);

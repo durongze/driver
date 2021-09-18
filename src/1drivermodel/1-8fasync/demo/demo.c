@@ -12,6 +12,7 @@
 #include <linux/pagemap.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
+#include <linux/timer.h>
 
 #include <asm/io.h>
 #include <asm/irq.h>
@@ -30,14 +31,14 @@ struct simple_dev *simple_devices;
 static struct timer_list simple_timer;
 static struct fasync_struct *fasync_queue=NULL;
 
-static void simple_timer_handler( unsigned long data)
+static void simple_timer_handler(struct timer_list *data)
 {
-    printk("simple_timer_handler...\n");
+    PDEBUG("simple_timer_handler...\n");
     if (fasync_queue)
     {
 	  //POLL_IN¿É¶Á£¬POLL_OUTÎª¿ÉÐ´
       kill_fasync(&fasync_queue, SIGIO, POLL_IN);
-      printk("kill_fasync...\n");
+      PDEBUG("kill_fasync...\n");
     }
     return ;
 }
@@ -51,7 +52,7 @@ int simple_open(struct inode *inode, struct file *filp)
     simple_timer.function = &simple_timer_handler;
 	simple_timer.expires = jiffies + 2*HZ;
 	add_timer (&simple_timer);
-    printk("add_timer...\n");
+    PDEBUG("add_timer...\n");
 	return 0;
 }
 
@@ -59,7 +60,7 @@ int simple_open(struct inode *inode, struct file *filp)
 static int simple_fasync(int fd, struct file * filp, int mode) 
 {
     int retval;
-    printk("simple_fasync...\n");
+    PDEBUG("simple_fasync...\n");
     retval=fasync_helper(fd,filp,mode,&fasync_queue);
     if(retval<0)
       return retval;
@@ -105,7 +106,7 @@ int simple_init_module(void)
 	result = register_chrdev_region(dev, 1, "DEMO");
 	if (result < 0) 
 	{
-		printk(KERN_WARNING "DEMO: can't get major %d\n", simple_MAJOR);
+		PDEBUG(KERN_WARNING "DEMO: can't get major %d\n", simple_MAJOR);
 		return result;
 	}
 
@@ -123,7 +124,7 @@ int simple_init_module(void)
 	result = cdev_add (&simple_devices->cdev, dev, 1);
 	if(result)
 	{
-		printk(KERN_NOTICE "Error %d adding DEMO\n", result);
+		PDEBUG(KERN_NOTICE "Error %d adding DEMO\n", result);
 		goto fail;
 	}
 	init_timer(&simple_timer);

@@ -24,6 +24,16 @@ function ModifyMakeFile()
     done 
 }
 
+function ModifyPrintHeader()
+{
+    CodeDir=$1
+    HeaderFile=$(find $CodeDir -iname "demo.h")
+    for HFile in $HeaderFile
+    do
+        sed -e 's/KERN_DEBUG "DEMO: " fmt,/"%s:[%s:%d]" fmt, KBUILD_MODNAME, __FUNCTION__, __LINE__,/g' -i $HFile
+    done
+}
+
 function DebugVmlinux()
 {
     echo ttyS0,115200 > /sys/module/kgdboc/parameters/kgdboc
@@ -43,4 +53,5 @@ function GenVimrcFile()
 }
 
 #ModifyMakeFile "src"
-GenVimrcFile
+#GenVimrcFile
+ModifyPrintHeader "src"

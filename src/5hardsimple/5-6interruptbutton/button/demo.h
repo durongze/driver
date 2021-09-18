@@ -10,7 +10,7 @@
 #undef PDEBUG             /* undef it, just in case */
 #ifdef button_DEBUG
 #ifdef __KERNEL__
-#    define PDEBUG(fmt, args...) printk( KERN_DEBUG "DEMO: " fmt, ## args)
+#    define PDEBUG(fmt, args...) printk( "%s:[%s:%d]" fmt, KBUILD_MODNAME, __FUNCTION__, __LINE__, ## args)
 #else//usr space
 #    define PDEBUG(fmt, args...) fprintf(stderr, fmt, ## args)
 #endif

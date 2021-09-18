@@ -21,7 +21,7 @@ static unsigned char demoBuffer[256];
 
 int simple_open(struct inode *inode, struct file *filp)
 {
-    printk("%s\r\n",__FUNCTION__);   
+    PDEBUG("%s\r\n",__FUNCTION__);   
 	if(simple_inc>0)return -ERESTARTSYS;
 	simple_inc++;
 	return 0;
@@ -29,14 +29,14 @@ int simple_open(struct inode *inode, struct file *filp)
 
 int simple_release(struct inode *inode, struct file *filp)
 {
-    printk("%s\r\n",__FUNCTION__);   
+    PDEBUG("%s\r\n",__FUNCTION__);   
 	simple_inc--;
 	return 0;
 }
 
 ssize_t simple_read(struct file *filp, char __user *buf, size_t count,loff_t *f_pos)
 {
-    printk("%s\r\n",__FUNCTION__);   
+    PDEBUG("%s\r\n",__FUNCTION__);   
 	/* 把数据拷贝到应用程序空间 */
 	if (copy_to_user(buf,demoBuffer,count))
 	{
@@ -47,7 +47,7 @@ ssize_t simple_read(struct file *filp, char __user *buf, size_t count,loff_t *f_
 
 ssize_t simple_write(struct file *filp, const char __user *buf, size_t count,loff_t *f_pos)
 {
-    printk("%s\r\n",__FUNCTION__);   
+    PDEBUG("%s\r\n",__FUNCTION__);   
 	/* 把数据拷贝到内核空间 */
 	if (copy_from_user(demoBuffer+*f_pos, buf, count))
 	{
@@ -70,7 +70,7 @@ struct file_operations simple_fops = {
 void simple_cleanup_module(void)
 {
     unregister_chrdev(simple_MAJOR,  "simple"); 
-	printk("simple_cleanup_module!\n");
+	PDEBUG("simple_cleanup_module!\n");
 }
 
 int simple_init_module(void)
@@ -79,7 +79,7 @@ int simple_init_module(void)
 	ret = register_chrdev(simple_MAJOR, "simple", &simple_fops);//注册设备号231，设备名 
 	if (ret < 0)
 	{
-		printk("Unable to register character device %d!\n",simple_MAJOR);
+		PDEBUG("Unable to register character device %d!\n",simple_MAJOR);
 		return ret;
 	}
 	return 0;
