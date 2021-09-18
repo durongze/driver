@@ -1,4 +1,6 @@
-MODNAME=demo
+MODNAME=i2c
+APP=test
+
 ifeq ($(PLATFORM),PC)
 	KERNELDIR=/lib/modules/$(shell uname -r)/build
        EXTRA_CFLAGS=-Dsimple_DEBUG
@@ -12,13 +14,17 @@ obj-m += $(MODNAME).o
 IS_EXIST=$(shell lsmod | grep ${MODNAME})
 
 ifeq ($(IS_EXIST),)
-    IS_EXIST="$(shell modinfo ${MODNAME}.ko)"
+    IS_EXIST=" none"
 else
-    IS_EXIST="$(shell sudo rmmod ${MODNAME})"
+    IS_EXIST=" exist"
 endif
+
+CPP=g++
+APP_SRCS=*.c
 
 default:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+	$(CPP) -o $(APP) $(APP_SRCS)
 
 test:default
 	@echo ${MODNAME} status : ${IS_EXIST} .
@@ -27,6 +33,6 @@ test:default
 
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod
-	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.*
+	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.* $(APP)
 
 

@@ -53,7 +53,7 @@ int simple_open(struct inode *inode, struct file *filp)
 	//t_watchdog =(104*64)/66500000~=0.0001s
 	wdctimeout=0xFFFF;
 	writel(wdctimeout, s3c_wdc_base + S3C64XX_WDCNT);
-	writel(tmp, s3c_wdc_base + S3C64XX_WDCON);
+	writel(tmp, s3c_wdc_base + S3C64XX_WDCON);
 	printk("S3C64XX_WDCON 0x%x\n",readl(s3c_wdc_base + S3C64XX_WDCON));
 	return 0;
 }
@@ -64,7 +64,8 @@ int simple_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-int simple_ioctl(struct inode *inode, struct file *filp,unsigned int cmd, unsigned long arg)
+// int simple_ioctl(struct inode *inode, struct file *filp,unsigned int cmd, unsigned long arg)
+ssize_t simple_ioctl(struct file *filp,unsigned int cmd, unsigned long arg)
 {
 	void __user *argp = (void __user *)arg;
 	int __user *p = argp;
@@ -89,8 +90,8 @@ struct file_operations simple_fops = {
 	.owner =    THIS_MODULE,
 	.open=  simple_open,
 	//.ioctl =    simple_ioctl,
-	.unlocked_ioctl =    simple_ioctl,
-	.release =  simple_release,
+	.unlocked_ioctl = simple_ioctl,
+	.release = simple_release,
 };
 
 /*******************************************************

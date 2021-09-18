@@ -39,9 +39,9 @@ ssize_t simple_read(struct file *filp, char __user *buf, size_t count,
                    loff_t *f_pos);
 ssize_t simple_write(struct file *filp, const char __user *buf, size_t count,
                     loff_t *f_pos);
-loff_t  simple_llseek(struct file *filp, loff_t off, int whence);
-int     simple_ioctl(struct inode *inode, struct file *filp,
-                    unsigned int cmd, unsigned long arg);
+loff_t simple_llseek(struct file *filp, loff_t off, int whence);
+// int simple_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg);
+ssize_t simple_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
 
 
 #endif /* _simple_H_ */

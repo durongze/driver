@@ -1,4 +1,5 @@
 MODNAME=demo
+
 ifeq ($(PLATFORM),PC)
 	KERNELDIR=/lib/modules/$(shell uname -r)/build
        EXTRA_CFLAGS=-Dsimple_DEBUG
@@ -12,9 +13,9 @@ obj-m += $(MODNAME).o
 IS_EXIST=$(shell lsmod | grep ${MODNAME})
 
 ifeq ($(IS_EXIST),)
-    IS_EXIST="$(shell modinfo ${MODNAME}.ko)"
+    IS_EXIST=" none"
 else
-    IS_EXIST="$(shell sudo rmmod ${MODNAME})"
+    IS_EXIST=" exist"
 endif
 
 default:
@@ -27,6 +28,6 @@ test:default
 
 clean:
 	rm -fr *.dwo .*.symvers.cmd .*.order.cmd *.ko *.mod
-	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.*
+	rm -fr *.mod.* *.o  .$(MODNAME).* .tmp* Module.* modules.* 
 
 

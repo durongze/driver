@@ -1,12 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 #include <linux/watchdog.h>
 
-#define WDIOC_KEEPALIVE 1
-#define WDIOC_SETTIMEOUT 2
+// #define WDIOC_KEEPALIVE 1
+// #define WDIOC_SETTIMEOUT 2
 
 
 int main(int argc, const char *argv[])
@@ -25,4 +27,5 @@ int main(int argc, const char *argv[])
 		sleep(1);
 	}
 	close(fd);
+	return 0;
 }

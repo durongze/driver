@@ -5,6 +5,7 @@
 #include<linux/ioctl.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include <sys/ioctl.h>
 
 #define COMMAND_LEDON   1
 #define COMMAND_LEDOFF  2
