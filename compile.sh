@@ -66,10 +66,14 @@ function CompileKernel()
     KernelDir=$1
     UserInput=$2
     pushd $KernelDir >> /dev/null
+        git fetch --unshallow
+        git fetch --tags
         cp /boot/config-`uname -r` .config
         sudo make menuconfig 
         sed -i 's/CONFIG_SYSTEM_TRUSTED_KEYS=.*/CONFIG_SYSTEM_TRUSTED_KEYS=""/g' .config
-        sudo make 
+        #sed -i 's/CONFIG_DEBUG_INFO_BTF=y/CONFIG_DEBUG_INFO_BTF=n/g' .config
+        cp drivers/tty/vt/defkeymap.c_shipped drivers/tty/vt/defkeymap.c
+        sudo make -j 8 
     popd >> /dev/null
 }
 
@@ -165,8 +169,14 @@ function FindKeyBoardDriver()
 	echo "sudo cat /sys/kernel/debug/dynamic_debug/control"
 }
 
+function InstallCompileTool()
+{
+    sudo apt install libelf-dev dwarves 
+}
+
 #GetUserInput 
-#DownloadKernel
-#CompileKernel "KernelDir" 
+DownloadKernel
+InstallCompileTool
+CompileKernel "$KernelDir" 
 CompileAllModule "src" "${UserInput}"
 FindKeyBoardDriver
