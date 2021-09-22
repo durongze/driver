@@ -119,12 +119,12 @@ function CompileModule()
     ModDir=$1
     echo -e "\033[32m $FUNCNAME $ModDir \033[0m"
     pushd $ModDir >> /dev/null
-        Log=$(make -f Makefile)
+        Log=$(make clean)
         if [ $? -ne 0 ];then
            echo "make : $Log"  
            exit
         else
-           RunModule
+           #RunModule
         fi
     popd >> /dev/null
 }
@@ -179,4 +179,4 @@ DownloadKernel
 InstallCompileTool
 CompileKernel "$KernelDir" 
 CompileAllModule "src" "${UserInput}"
-FindKeyBoardDriver
+#FindKeyBoardDriver

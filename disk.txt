@@ -1,0 +1,43 @@
+fdisk Start.img
+
+Welcome to fdisk (util-linux 2.34).
+Changes will remain in memory only, until you decide to write the
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0xb5b587a1.
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1):
+First sector (2048-204799, default 2048):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-204799, default 204799):
+
+Created a new partition 1 of type 'Linux' and of size 99 MiB.
+
+Command (m for help): p
+Disk Start.img: 100 MiB, 104857600 bytes, 204800 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xb5b587a1
+
+Device     Boot Start    End Sectors Size Id Type
+Start.img1       2048 204799  202752  99M 83 Linux
+
+Command (m for help): w
+The partition table has been altered.
+Syncing disks.
+##############################################################################
+hd Start.img -n 512
+00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+000001b0  00 00 00 00 00 00 00 00  a1 87 b5 b5 00 00 00 20  |............... |
+000001c0  21 00 83 be 32 0c 00 08  00 00 00 18 03 00 00 00  |!...2...........|
+000001d0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+000001f0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 55 aa  |..............U.|
