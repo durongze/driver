@@ -121,11 +121,41 @@ function InstallBootLoader()
 	hd $DiskImg -n 512 
 }
 
-GenRootFs "${INITRD}"
-VmLinuZToVmLinux 
-CreateDiskImg 
-CreateRootFs
-InstallBootLoader 
-RemoveLoopDevAll
+#mkdir WorkDir
+#pushd WorkDir
+#GenRootFs "${INITRD}"
+#VmLinuZToVmLinux 
+#CreateDiskImg 
+#CreateRootFs
+#InstallBootLoader 
+#RemoveLoopDevAll
+#popd
+
+function CreateHelloRootFs()
+{
+	gcc --static -o hello rootfs.c
+	echo hello | cpio -o --format=newc > rootfs
+	qemu-system-x86_64 -kernel ./linux-5.14/arch/x86/boot/bzImage -initrd ./rootfs -append "root=/dev/ram rdinit=./hello" -smp 2 -s -S
+}
+
+CreateHelloRootFs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
