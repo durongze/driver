@@ -1,5 +1,5 @@
 MODNAME=smodule
-ifeq ($(PLATFORM),PC)
+ifneq ($(PLATFORM),PC)
 	KERNELDIR=/lib/modules/$(shell uname -r)/build
        EXTRA_CFLAGS=-Dsimple_DEBUG
 else

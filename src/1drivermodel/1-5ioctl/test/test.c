@@ -3,6 +3,7 @@
 #include<fcntl.h>
 #include<linux/rtc.h>
 #include<linux/ioctl.h>
+#include<sys/ioctl.h>
 #include<stdio.h>
 #include<stdlib.h>
 

@@ -40,11 +40,7 @@ int simple_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-#ifdef PC
 long simple_ioctl(struct file *filp,unsigned int cmd, unsigned long arg)
-#else
-int simple_ioctl(struct inode *inode, struct file *filp,unsigned int cmd, unsigned long arg)
-#endif
 {
     PDEBUG("");
 	switch(cmd)

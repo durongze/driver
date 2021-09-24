@@ -8,6 +8,16 @@ UserInput=`echo -ne "\033"`
 
 KernelCodeName="$(lsb_release --codename | cut -f2)"
 KernelDir="ubuntu-${KernelCodeName}"
+SkipModList="src/11input/11-2Button/button "
+SkipModList="$SkipModList src/11input/11-3beep/demo "
+SkipModList="$SkipModList src/1drivermodel/1-10block "
+SkipModList="$SkipModList src/3memory/3-2mmap/mmap "
+SkipModList="$SkipModList src/4schedule/4-4time/time "
+SkipModList="$SkipModList src/5hardsimple/5-2beep/demo "
+SkipModList="$SkipModList src/5hardsimple/5-3led/demo "
+SkipModList="$SkipModList src/5hardsimple/5-4scanbutton/button "
+SkipModList="$SkipModList src/5hardsimple/5-5simuI2C/i2c "
+SkipModList="$SkipModList src/5hardsimple/5-6interruptbutton/button "
 
 function GetUserInput()
 {
@@ -123,7 +133,7 @@ function CompileModule()
         if [ $? -ne 0 ];then
            echo "make : $Log"  
            exit
-        else
+        #else
            #RunModule
         fi
     popd >> /dev/null
@@ -136,6 +146,18 @@ function ListPcAllModule()
     ls ${HostKoDir}
 }
 
+function IsSkipSpecModule()
+{
+    Mod=$1
+    for m in $SkipModList
+    do 
+        if [[ "$m" == "$Mod" ]];then
+            return 1
+        fi;
+    done
+    return 0
+}
+
 function CompileAllModule()
 {
     RootDir=$1
@@ -143,7 +165,12 @@ function CompileAllModule()
     for mod in $(echo $ModsDir | sort)
     do
         mod=${mod%/*}
-        CompileModule "$mod"
+        IsSkipSpecModule "$mod"
+        if [[ "$?" == "0" ]];then
+            CompileModule "$mod"
+        else 
+            echo "Skip $mod ..."
+        fi
     done
 }
 
@@ -175,8 +202,8 @@ function InstallCompileTool()
 }
 
 #GetUserInput 
-DownloadKernel
-InstallCompileTool
-CompileKernel "$KernelDir" 
+#DownloadKernel
+#InstallCompileTool
+#CompileKernel "$KernelDir" 
 CompileAllModule "src" "${UserInput}"
 #FindKeyBoardDriver

@@ -127,7 +127,7 @@ int simple_init_module(void)
 		PDEBUG(KERN_NOTICE "Error %d adding DEMO\n", result);
 		goto fail;
 	}
-	init_timer(&simple_timer);
+	// init_timer(&simple_timer);
 	return 0;
 
 fail:
