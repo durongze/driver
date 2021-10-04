@@ -74,7 +74,7 @@ int write_printk_file(const std::string &file)
 
     create_dir(PRINTK_PATH);
 
-    fs << "4	4	1	7" << std::endl;
+    fs << "7	4	1	7" << std::endl;
 
     return 0;
 }
