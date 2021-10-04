@@ -174,13 +174,21 @@ function CompileAllModule()
     done
 }
 
+function FixMkInitRamfs()
+{
+    ResumeFile="/etc/initramfs-tools/conf.d/resume"
+    UUID=$(blkid | awk -F\" '/swap/ {print $2}')
+    echo "RESUME=UUID=${UUID}" > $ResumeFile
+}
+
 function InstallKernel()
 {
+    KernelVersion="5.4.124"
     pushd ubuntu-${KernelCodeName} >> /dev/null
         sudo make modules_install
         sudo make install
-        sudo mkinitramfs -o /boot/initrd.img-5.4.124
-        sudo update-initramfs -c -k 5.4.124
+        #sudo mkinitramfs /boot/initrd.img-${KernelVersion}  #FixMkInitRamfs
+        sudo update-initramfs ${KernelVersion}
         sudo update-grub2
         #sudo vi /boot/grub/grub.cfg # set timeout=30
     popd >> dev/null

@@ -135,27 +135,29 @@ function CreateHelloRootFs()
 {
 	gcc --static -o hello rootfs.c
 	echo hello | cpio -o --format=newc > rootfs
-	qemu-system-x86_64 -kernel ./linux-5.14/arch/x86/boot/bzImage -initrd ./rootfs -append "root=/dev/ram rdinit=./hello" -smp 2 -s -S
+	qemu-system-x86_64 -nographic -kernel ./linux-5.14/arch/x86/boot/bzImage -initrd ./rootfs -append "root=/dev/ram rdinit=./hello console=ttyS0" -smp 2 -s -S
 }
 
 CreateHelloRootFs
 
+function InitrdImgToDir()
+{
+    pushd /tmp/xxx
+    InitrdImg="initrd.img"
+    # cpio -i --make-directories < ${InitrdImg} # old version
+    #lsinitramfs ${InitrdImg}
+    Fmt=$(binwalk ${InitrdImg} | grep "gzip compressed data")
+    if [[ -z ${Fmt} ]];then
+        echo "fmt:unknown"
+    else
+        BsSize=$(binwalk -y gzip ${InitrdImg} | cut -d' ' -f1)
+        echo "fmt:gzip:$BsSize"
+        #dd if=${InitrdImg} bs=${BsSize} skip=1 | zcat | cpio -id --no-absolute-filenames -v
+    fi
+    popd
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#InitrdImgToDir
 
 
 
