@@ -133,7 +133,7 @@ function InstallBootLoader()
 
 function CreateHelloRootFs()
 {
-	gcc --static -o hello rootfs.c
+	g++ --static -o hello rootfs.cc
 	echo hello | cpio -o --format=newc > rootfs
 	qemu-system-x86_64 -nographic -kernel ./linux-5.14/arch/x86/boot/bzImage -initrd ./rootfs -append "root=/dev/ram rdinit=./hello console=ttyS0" -smp 2 -s -S
 }
