@@ -1,22 +1,55 @@
-
 #include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/configfs.h>
 #include <linux/module.h>
 #include <linux/fs.h>
-#include <linux/interrupt.h>
-#include <linux/timer.h>
-#include <linux/delay.h>
-
 #include <asm/uaccess.h>
-#include <asm/io.h>
-
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/signal.h>
-#include <asm/hardware.h>
 #include <asm/uaccess.h>
+
+#ifdef  delay_func
+#include <linux/init.h>
+#include <linux/configfs.h>
+#include <linux/interrupt.h>
+#include <linux/timer.h>
+#include <linux/delay.h>
+#include <asm/hardware.h>
 #include <asm/arch/regs-gpio.h>
+#else
+#define udelay(x) 
+#define mdelay(x) 
+
+#define S3C2410_GPACON (void*) (0x56000000) //Port A control
+#define S3C2410_GPADAT (void*) (0x56000004) //Port A data 
+
+#define S3C2410_GPBCON (void*) (0x56000010) //Port B control 
+#define S3C2410_GPBDAT (void*) (0x56000014) //Port B data
+#define S3C2410_GPBUP  (void*) (0x56000018) //Pull-up control B 
+
+#define S3C2410_GPCCON (void*) (0x56000020) //Port C control 
+#define S3C2410_GPCDAT (void*) (0x56000024) //Port C data
+#define S3C2410_GPCUP  (void*) (0x56000028) //Pull-up control C
+
+#define S3C2410_GPDCON (void*) (0x56000030) //Port D control
+#define S3C2410_GPDDAT (void*) (0x56000034) //Port D data
+#define S3C2410_GPDUP  (void*) (0x56000038) //Pull-up control D 
+
+#define S3C2410_GPECON (void*) (0x56000040) //Port E control 
+#define S3C2410_GPEDAT (void*) (0x56000044) //Port E data 
+#define S3C2410_GPEUP  (void*) (0x56000048) //Pull-up control E 
+
+#define S3C2410_GPFCON (void*) (0x56000050) //Port F control 
+#define S3C2410_GPFDAT (void*) (0x56000054) //Port F data
+#define S3C2410_GPFUP  (void*) (0x56000058) //Pull-up control F 
+
+#define S3C2410_GPGCON (void*) (0x56000060) //Port G control 
+#define S3C2410_GPGDAT (void*) (0x56000064) //Port G data
+#define S3C2410_GPGUP  (void*) (0x56000068) //Pull-up control G 
+
+#define S3C2410_GPHCON (void*) (0x56000070) //Port H control 
+#define S3C2410_GPHDAT (void*) (0x56000074) //Port H data
+#define S3C2410_GPHUP  (void*) (0x56000078) //Pull-up control H 现用 C 口举例说明
+#endif
 
 #define DEBUG_SHOW 1
 #define BUFFERSIZE 4
@@ -31,7 +64,6 @@ int dev_MAJOR=235;
 #define I2C_READ_DATA  1
 #define I2C_WRITE_DATA 2
 
-
 struct I2C_MSGbuffer
 {
 	unsigned short len;
@@ -39,28 +71,28 @@ struct I2C_MSGbuffer
 	char buffer[64];
 };
 
-void SetSDAOut()
+void SetSDAOut(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPECON)&(~(1<<31)))|(1<<30),S3C2410_GPECON);
 	__raw_writel((readl(S3C2410_GPEUP)|(1<<15)),S3C2410_GPEUP);
 }
 
-void SetSDAInput()
+void SetSDAInput(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPECON)&(~(3<<30))),S3C2410_GPECON);
 }
 
-void SetSCLOut()
+void SetSCLOut(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPECON)&(~(1<<29)))|(1<<28),S3C2410_GPECON);
 }
 
-void SetSCLInput()
+void SetSCLInput(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPECON)&(~(3<<28))),S3C2410_GPECON);
 }
 
-int GetSDAValue()
+int GetSDAValue(void)
 {
 	int ret=__raw_readl(S3C2410_GPEDAT)&(1<<15);
 	if(ret==0)
@@ -69,22 +101,22 @@ int GetSDAValue()
 	    return 1;
 }
 
-void SetSDAHigh()
+void SetSDAHigh(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPEDAT)|(1<<15)),S3C2410_GPEDAT);
 }
 
-void SetSDALow()
+void SetSDALow(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPEDAT)&(~(1<<15))),S3C2410_GPEDAT);
 }
 
-void SetSCLHigh()
+void SetSCLHigh(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPEDAT)|(1<<14)),S3C2410_GPEDAT);
 }
 
-void SetSCLLow()
+void SetSCLLow(void)
 {
 	__raw_writel((__raw_readl(S3C2410_GPEDAT)&(~(1<<14))),S3C2410_GPEDAT);
 }
@@ -309,7 +341,8 @@ static int I2C_open(struct inode *inode, struct file *filp)
 	return ret;
 }
 
-static int I2C_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
+// static int I2C_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
+static long I2C_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd)
 	{
@@ -368,7 +401,7 @@ static int I2C_release(struct inode *inode,struct file *filp)
 static struct file_operations I2C_fops={
 	.owner = THIS_MODULE,
 	.open = I2C_open,
-	.ioctl = I2C_ioctl,
+	.unlocked_ioctl = I2C_ioctl,
 	.release = I2C_release,
 };
 

@@ -8,6 +8,17 @@
 #define NETLINK_SAMPLE 22//ÀàÐÍ
 #define MAX_PAYLOAD 1200
 
+#define TtyPrint(fmt, ...)         \
+do {                               \
+    struct tty_struct *my_tty;     \
+    my_tty = current->signal->tty; \
+    if (my_tty != NULL) {          \
+        char str[2048] = {0};      \
+        vsnprintf(str, fmt, ##__VA_ARGS__)                        \
+        ((my_tty->driver)->ops->write) (my_tty, str, strlen(str));  \
+    }                              \
+} while(0);
+
 struct sock *nl_sk = NULL;
 
 bool skb_get_data(struct sk_buff *__skb, char *data, int *data_len, unsigned int *pid)
@@ -23,7 +34,7 @@ bool skb_get_data(struct sk_buff *__skb, char *data, int *data_len, unsigned int
 			memcpy(data, NLMSG_DATA(nlh), nlh->nlmsg_len);
 			*data_len = nlh->nlmsg_len; 
 		}
-		printk("net_link: recv (%d) '%s' from process %d.\n", *data_len, data, *pid);
+		TtyPrint("net_link: recv (%d) '%s' from process %d.\n", *data_len, data, *pid);
 		kfree_skb(skb);
 		return true;
 	}

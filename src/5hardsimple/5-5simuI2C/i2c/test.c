@@ -63,5 +63,5 @@ int main(int argc, char **argv)
 		 printf("read Error\n"); 
 	}
     close(fd); 
-    return;
+    return 0;
 }

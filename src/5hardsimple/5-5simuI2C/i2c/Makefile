@@ -20,7 +20,7 @@ else
 endif
 
 CPP=g++
-APP_SRCS=*.c
+APP_SRCS=test.c
 
 default:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules

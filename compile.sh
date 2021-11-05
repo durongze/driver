@@ -16,7 +16,7 @@ SkipModList="$SkipModList src/4schedule/4-4time/time "
 SkipModList="$SkipModList src/5hardsimple/5-2beep/demo "
 SkipModList="$SkipModList src/5hardsimple/5-3led/demo "
 SkipModList="$SkipModList src/5hardsimple/5-4scanbutton/button "
-SkipModList="$SkipModList src/5hardsimple/5-5simuI2C/i2c "
+#SkipModList="$SkipModList src/5hardsimple/5-5simuI2C/i2c "
 SkipModList="$SkipModList src/5hardsimple/5-6interruptbutton/button "
 
 function GetUserInput()
