@@ -17,6 +17,7 @@
 
 MODULE_DESCRIPTION("mmap demo driver");
 MODULE_LICENSE("Dual BSD/GPL");
+
 #define init_MUTEX(sem)     sema_init(sem, 1)
 
 struct simple_dev *simple_devices;
@@ -24,9 +25,15 @@ static unsigned char simple_inc=0;
 static char*buffer=NULL;
 static char*buffer_area=NULL;
 
+struct mm_struct init_mm;
+
 volatile void *virt_to_kseg(volatile void *address)
 {
-    pgd_t *pgd; pmd_t *pmd; pte_t *ptep, pte;
+    pgd_t *pgd;
+	p4d_t *p4d;
+	pud_t *pud;
+    pmd_t *pmd;
+    pte_t *ptep, pte;
 	unsigned long va, ret = 0UL;
 	
 	va=(unsigned long)address;
@@ -39,8 +46,13 @@ volatile void *virt_to_kseg(volatile void *address)
     {
 		return((volatile void *)ret);
 	}
+
+	p4d = p4d_offset(pgd_offset_pgd(pgd, va), va),	
+	pud = pud_offset(p4d, va);
+
     /* get the page middle directory */
-    pmd = pmd_offset(pgd, va);
+    pmd = pmd_offset(pud, va);
+
     /* check whether we found an entry */
     if (pmd_none(*pmd))
     {
@@ -84,9 +96,11 @@ int simple_release(struct inode *inode, struct file *filp)
 static int simple_mmap(struct file *filp, struct vm_area_struct *vma)
 {
 	int ret;
+    // unsigned long pfn_start = virt_to_phys((void*)((unsigned long)buffer_area)) >> PAGE_SHIFT;
+    unsigned long pfn_start = (unsigned long)buffer_area;
 	ret = remap_pfn_range(vma,
 		   vma->vm_start,
-		   virt_to_phys((void*)((unsigned long)buffer_area)) >> PAGE_SHIFT,
+		   pfn_start,
 		   vma->vm_end-vma->vm_start,
 		   PAGE_SHARED);
 	if(ret != 0) {
@@ -128,7 +142,6 @@ int simple_init_module(void)
 {
 	int result;
 	dev_t dev = 0;
-	int i;
 	unsigned long virt_addr;
 	
 	dev = MKDEV(simple_MAJOR, simple_MINOR);
@@ -160,7 +173,7 @@ int simple_init_module(void)
 	
 	buffer = kmalloc(4096,GFP_KERNEL);            
     printk(" mmap buffer = %p\n",buffer);            
-	buffer_area=(int *)(((unsigned long)buffer + PAGE_SIZE -1) & PAGE_MASK);
+	buffer_area=(char *)(((unsigned long)buffer + PAGE_SIZE -1) & PAGE_MASK);
 
 	for (virt_addr=(unsigned long)buffer_area; virt_addr<(unsigned long)buffer_area+4096;
 		virt_addr+=PAGE_SIZE)
