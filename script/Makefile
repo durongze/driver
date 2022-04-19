@@ -1,7 +1,14 @@
 sh_script=mysh
 sh_script_exec=$(sh_script).exe
 sh_script_srcs=$(sh_script).cc
-sh_script_libs=$(shell ls $(HOME)/opt)
+
+#IS_LOCAL=ON
+
+ifneq ($(IS_LOCAL),)
+		sh_script_libs=$(shell ls $(HOME)/opt)
+else
+		sh_script_libs=$$(ls $$(HOME)\/opt)
+endif
 
 sh2cc_exec = sh2cc
 sh2cc_srcs = $(wildcard sh2cc.cc)
